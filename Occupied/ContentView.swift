@@ -8,17 +8,48 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var isOccupied: Bool? = false
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            ZStack {
+                VStack {
+                    Button {
+                        withAnimation {
+                            isOccupied?.toggle()
+                        }
+                    } label: {
+                        Image(isOccupied! ? "Occupied" : "Vacant")
+                            .resizable()
+                            .scaledToFit()
+                            .padding()
+                    }
+                }
+            }
+            .navigationTitle("Privacy Room - ADA")
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Menu {
+                        Button {
+                            
+                        } label: {
+                            Text("Create a Room")
+                        }
+                        
+                        Button {
+                            
+                        } label: {
+                            Text("Join a Room")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis")
+                    }
+                }
+            }
         }
-        .padding()
     }
 }
 
 #Preview {
     ContentView()
 }
+
