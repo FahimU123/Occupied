@@ -67,8 +67,8 @@ class RoomViewModel {
             self.rooms = documents.map { queryDocumentSnapshot -> Room in
                 let data = queryDocumentSnapshot.data()
                 let id = queryDocumentSnapshot.documentID
-                let name = data["author"] as? String ?? ""
-                let joinCode = data["pages"] as? String ?? ""
+                let name = data["author"] as? String ?? "No Room Found"
+                let joinCode = data["pages"] as? String ?? "No Code Found"
                 let isOccupied = data["pages"] as? Bool ?? false
                 
                 return Room(id: id, name: name, joinCode: joinCode, isOccupied: isOccupied)

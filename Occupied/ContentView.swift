@@ -11,6 +11,8 @@ struct ContentView: View {
     @State private var isOccupied: Bool? = false
     @State private var roomViewModel = RoomViewModel(rooms: [])
     @State private var showCreateARoomPopover = false
+    @State private var showJoinARoomPopOver = false
+    @State private var showDeleteAlert = false
     var body: some View {
         NavigationStack {
             ZStack {
@@ -30,11 +32,16 @@ struct ContentView: View {
             .navigationTitle("Privacy Room - ADA")
             .toolbar {
                 ToolbarItemGroup(placement: .primaryAction) {
-                    // FIXME: We should have an alert here for them to make sure they diont delete on accident
                     Button {
-                        
+                        showDeleteAlert = true
                     } label: {
                         Image(systemName: "trash")
+                    }
+                    // FIXME: Better message
+                    .alert("Are you sure you want to leave this room?", isPresented: $showDeleteAlert) {
+                        Button("OK", role: .destructive) {
+                           // Call deleteRoom func and pass in a room here
+                        }
                     }
                     Menu {
                         Button("Create a Room") {
@@ -43,7 +50,7 @@ struct ContentView: View {
                         
                         
                         Button {
-                            
+                            showJoinARoomPopOver = true
                         } label: {
                             Text("Join a Room")
                         }
@@ -53,9 +60,10 @@ struct ContentView: View {
                 }
             }
             .popover(isPresented: $showCreateARoomPopover) {
-                // FIXME
-                // CreateARoom view has too many dependecies and I dont have the necessary objects to pass in
-                
+                // FIXME: CreateARoom view has too many dependecies and I dont have the necessary objects to pass in
+            }
+            .popover(isPresented: $showJoinARoomPopOver) {
+                JoinARoomView()
             }
         }
     }

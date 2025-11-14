@@ -10,19 +10,25 @@ import SwiftUI
 struct CreateARoomView: View {
     @State var room: Room
     let roomViewModel: RoomViewModel
+    @State var test: String
     var body: some View {
-        VStack {
-            Form {
-                TextField("Name", text: $room.name)
-                    .submitLabel(.done)
+        NavigationStack {
+            VStack {
+                Form {
+                    TextField("Name", text: $test)
+                        .submitLabel(.done)
+                    Toggle("Status", isOn: $room.isOccupied)
+                }
+                .onSubmit {
+                    roomViewModel.createARoom(name: room.name, joinCode: room.joinCode, isOccupied: false)
+                }
             }
-            .onSubmit {
-                roomViewModel.createARoom(name: room.name, joinCode: room.joinCode, isOccupied: false)
-            }
+            .navigationTitle("Create a Room")
         }
-        .onAppear {
-            roomViewModel.generateRoomCode()
-        }
+        
+//        .onAppear {
+//            roomViewModel.generateRoomCode()
+//        }
     }
 }
 
