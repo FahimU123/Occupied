@@ -10,7 +10,7 @@ import Foundation
 
 struct Room: Identifiable, Codable {
     @DocumentID var id: String?
-    let name: String
-    let joinCode: String
+    var name: String
+    var joinCode: String
     var isOccupied: Bool
 }

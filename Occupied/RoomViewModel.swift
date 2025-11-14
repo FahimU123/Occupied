@@ -7,6 +7,7 @@
 
 import FirebaseFirestore
 import Foundation
+import os
 
 @Observable
 class RoomViewModel {
@@ -15,7 +16,22 @@ class RoomViewModel {
     
     var rooms: [Room]
     
-    func createARoom() {
+    init(db: Firestore = Firestore.firestore(), rooms: [Room]) {
+        self.db = db
+        self.rooms = rooms
+    }
+    
+    func createARoom(name: String, joinCode: String, isOccupied: Bool) {
+        let newRoom = Room(name: name, joinCode: joinCode, isOccupied: isOccupied)
+        
+        do {
+            _ = try db.collection("Room").addDocument(from: newRoom)
+        } catch {
+            AppLogger.logger.error("Error creating a new room \(error.localizedDescription)")
+        }
+    }
+    
+    func generateRoomCode() {
         
     }
     
@@ -31,20 +47,31 @@ class RoomViewModel {
         
     }
     
+    func deleteARoom(room: Room) {
+        guard let roomID = room.id else { return }
+        
+        db.collection("Room").document(roomID).delete() { error in
+            if let error = error {
+                AppLogger.logger.error("Error deleting room \(error.localizedDescription)")
+            }
+        }
+    }
+    
     func fetchRooms() {
         db.collection("Rooms").addSnapshotListener { (querySnapshot, error) in
             guard let documents = querySnapshot?.documents else {
-                print("No documents")
+                AppLogger.logger.info("No documents")
                 return
             }
             
             self.rooms = documents.map { queryDocumentSnapshot -> Room in
                 let data = queryDocumentSnapshot.data()
-                let title = data["title"] as? String ?? ""
-                let author = data["author"] as? String ?? ""
-                let numberOfPages = data["pages"] as? Int ?? 0
+                let id = queryDocumentSnapshot.documentID
+                let name = data["author"] as? String ?? ""
+                let joinCode = data["pages"] as? String ?? ""
+                let isOccupied = data["pages"] as? Bool ?? false
                 
-//                return Room(id: <#T##String?#>, name: <#T##String#>, joinCode: <#T##String#>, isOccupied: <#T##Bool#>)
+                return Room(id: id, name: name, joinCode: joinCode, isOccupied: isOccupied)
             }
         }
     }

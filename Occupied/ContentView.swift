@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var isOccupied: Bool? = false
+    @State private var roomViewModel = RoomViewModel(rooms: [])
+    @State private var showCreateARoomPopover = false
     var body: some View {
         NavigationStack {
             ZStack {
@@ -27,13 +29,18 @@ struct ContentView: View {
             }
             .navigationTitle("Privacy Room - ADA")
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
+                ToolbarItemGroup(placement: .primaryAction) {
+                    // FIXME: We should have an alert here for them to make sure they diont delete on accident
+                    Button {
+                        
+                    } label: {
+                        Image(systemName: "trash")
+                    }
                     Menu {
-                        Button {
-                            
-                        } label: {
-                            Text("Create a Room")
+                        Button("Create a Room") {
+                            showCreateARoomPopover = true
                         }
+                        
                         
                         Button {
                             
@@ -44,6 +51,11 @@ struct ContentView: View {
                         Image(systemName: "ellipsis")
                     }
                 }
+            }
+            .popover(isPresented: $showCreateARoomPopover) {
+                // FIXME
+                // CreateARoom view has too many dependecies and I dont have the necessary objects to pass in
+                
             }
         }
     }
