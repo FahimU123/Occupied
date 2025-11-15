@@ -18,13 +18,21 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 @main
 struct YourApp: App {
+    var authViewModel = AuthViewModel()
     // register app delegate for Firebase setup
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     var body: some Scene {
         WindowGroup {
             NavigationView {
-                ContentView()
+                if authViewModel.isLoading {
+                    ProgressView()
+                } else if authViewModel.isAuthenticated {
+                    ContentView()
+                        .environment(authViewModel)
+                } else {
+                    ContentUnavailableView("Cannot connet to server, try again later", image: "loading")
+                }
             }
         }
     }

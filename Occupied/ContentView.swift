@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var isOccupied: Bool? = false
     @State private var roomViewModel = RoomViewModel(rooms: [])
+    @State private var isOccupied: Bool? = false
     @State private var showCreateARoomPopover = false
     @State private var showJoinARoomPopOver = false
     @State private var showDeleteAlert = false
@@ -30,6 +30,9 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Privacy Room - ADA")
+            .onAppear {
+                roomViewModel.fetchRooms()
+            }
             .toolbar {
                 ToolbarItemGroup(placement: .primaryAction) {
                     Button {
@@ -54,6 +57,15 @@ struct ContentView: View {
                         } label: {
                             Text("Join a Room")
                         }
+                        Divider()
+                        Menu("My Rooms") {
+                            ForEach(roomViewModel.rooms, id: \.joinCode) { room in
+                                // FIXME: Based on choice chnage current room
+                                Button(room.name) {
+                                    
+                                }
+                            }
+                        }
                     } label: {
                         Image(systemName: "ellipsis")
                     }
@@ -61,6 +73,7 @@ struct ContentView: View {
             }
             .popover(isPresented: $showCreateARoomPopover) {
                 // FIXME: CreateARoom view has too many dependecies and I dont have the necessary objects to pass in
+                CreateARoomView(roomViewModel: roomViewModel)
             }
             .popover(isPresented: $showJoinARoomPopOver) {
                 JoinARoomView()

@@ -13,6 +13,7 @@
 		DD0841132EC779B300482CAA /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = DD0841122EC779B300482CAA /* FirebaseAnalyticsCore */; };
 		DD0841152EC779B300482CAA /* FirebaseAnalyticsIdentitySupport in Frameworks */ = {isa = PBXBuildFile; productRef = DD0841142EC779B300482CAA /* FirebaseAnalyticsIdentitySupport */; };
 		DD08411C2EC77D5D00482CAA /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = DD08411B2EC77D5D00482CAA /* FirebaseFirestore */; };
+		DDFDB6FA2EC7FF430029CE11 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = DDFDB6F92EC7FF430029CE11 /* FirebaseAuth */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 				DD08410D2EC779B300482CAA /* FirebaseAI in Frameworks */,
 				DD0841112EC779B300482CAA /* FirebaseAnalytics in Frameworks */,
 				DD0841132EC779B300482CAA /* FirebaseAnalyticsCore in Frameworks */,
+				DDFDB6FA2EC7FF430029CE11 /* FirebaseAuth in Frameworks */,
 				DD08411C2EC77D5D00482CAA /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -94,6 +96,7 @@
 				DD0841122EC779B300482CAA /* FirebaseAnalyticsCore */,
 				DD0841142EC779B300482CAA /* FirebaseAnalyticsIdentitySupport */,
 				DD08411B2EC77D5D00482CAA /* FirebaseFirestore */,
+				DDFDB6F92EC7FF430029CE11 /* FirebaseAuth */,
 			);
 			productName = Occupied;
 			productReference = DD0840FD2EC771E500482CAA /* Occupied.app */;
@@ -406,6 +409,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DD08410B2EC779B300482CAA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		DDFDB6F92EC7FF430029CE11 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DD08410B2EC779B300482CAA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

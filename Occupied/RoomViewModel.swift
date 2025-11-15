@@ -31,10 +31,6 @@ class RoomViewModel {
         }
     }
     
-    func generateRoomCode() {
-        
-    }
-    
     func joinARoom() {
         
     }
@@ -75,4 +71,5 @@ class RoomViewModel {
             }
         }
     }
+
 }
