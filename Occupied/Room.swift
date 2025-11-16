@@ -8,9 +8,10 @@
 import FirebaseFirestore
 import Foundation
 
-struct Room: Identifiable, Codable {
+struct Room: Codable {
     @DocumentID var id: String?
-    var name: String
-    var joinCode: String
-    var isOccupied: Bool
+    var name: String?
+    var joinCode: String?
+    var isOccupied: Bool?
+    var ownerID: String?
 }

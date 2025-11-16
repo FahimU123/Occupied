@@ -32,13 +32,4 @@ class AuthViewModel {
             self.isLoading = false
         }
     }
-    
-    func signOut() {
-        do {
-            try Auth.auth().signOut()
-        } catch {
-            AppLogger.logger.error("Unable to sign out \(error.localizedDescription)")
-        }
-    }
-    
 }

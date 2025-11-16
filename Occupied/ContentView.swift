@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var roomViewModel = RoomViewModel(rooms: [])
-    @State private var isOccupied: Bool? = false
+    @State private var currentRoom: Room?
     @State private var showCreateARoomPopover = false
     @State private var showJoinARoomPopOver = false
     @State private var showDeleteAlert = false
@@ -19,38 +19,45 @@ struct ContentView: View {
                 VStack {
                     Button {
                         withAnimation {
-                            isOccupied?.toggle()
+                            currentRoom?.isOccupied?.toggle()
                         }
                     } label: {
-                        Image(isOccupied! ? "Occupied" : "Vacant")
+                        Image(currentRoom?.isOccupied ?? false ? "Occupied" : "Vacant")
                             .resizable()
                             .scaledToFit()
                             .padding()
                     }
                 }
             }
-            .navigationTitle("Privacy Room - ADA")
+            .navigationTitle(currentRoom?.name! ?? "Join or Create a Room")
             .onAppear {
                 roomViewModel.fetchRooms()
+                retrieve()
+            }
+            .onDisappear {
+                save()
             }
             .toolbar {
                 ToolbarItemGroup(placement: .primaryAction) {
-                    Button {
-                        showDeleteAlert = true
-                    } label: {
-                        Image(systemName: "trash")
-                    }
-                    // FIXME: Better message
-                    .alert("Are you sure you want to leave this room?", isPresented: $showDeleteAlert) {
-                        Button("OK", role: .destructive) {
-                           // Call deleteRoom func and pass in a room here
+                    if let currentRoom = currentRoom {
+                        Button {
+                            showDeleteAlert = true
+                        } label: {
+                            Image(systemName: "trash")
+                        }
+                        // FIXME: Better message
+                        .alert("Are you sure you want to leave this room?", isPresented: $showDeleteAlert) {
+                            Button("OK", role: .destructive) {
+                                // Call deleteRoom func and pass in a room here
+                                roomViewModel.deleteARoom(room: currentRoom)
+                            }
                         }
                     }
+               
                     Menu {
                         Button("Create a Room") {
                             showCreateARoomPopover = true
                         }
-                        
                         
                         Button {
                             showJoinARoomPopOver = true
@@ -59,10 +66,10 @@ struct ContentView: View {
                         }
                         Divider()
                         Menu("My Rooms") {
-                            ForEach(roomViewModel.rooms, id: \.joinCode) { room in
+                            ForEach(roomViewModel.rooms, id: \.id) { room in
                                 // FIXME: Based on choice chnage current room
-                                Button(room.name) {
-                                    
+                                Button(room.name ?? "Join or Create a Room") {
+                                    currentRoom = room
                                 }
                             }
                         }
@@ -72,7 +79,6 @@ struct ContentView: View {
                 }
             }
             .popover(isPresented: $showCreateARoomPopover) {
-                // FIXME: CreateARoom view has too many dependecies and I dont have the necessary objects to pass in
                 CreateARoomView(roomViewModel: roomViewModel)
             }
             .popover(isPresented: $showJoinARoomPopOver) {
@@ -80,9 +86,22 @@ struct ContentView: View {
             }
         }
     }
+    func save() {
+        if let currentRoom = currentRoom {
+            if let encoded = try? JSONEncoder().encode(currentRoom) {
+                UserDefaults.standard.set(encoded, forKey: "current_room")
+            }
+        }
+    }
+    
+    func retrieve() {
+        if let savedRoom = UserDefaults.standard.data(forKey: "current_room"),
+           let decodedRoom = try? JSONDecoder().decode(Room.self, from: savedRoom) {
+            currentRoom = decodedRoom
+        }
+    }
 }
 
 #Preview {
-    ContentView()
+//    ContentView()
 }
-

@@ -31,10 +31,15 @@ struct YourApp: App {
                     ContentView()
                         .environment(authViewModel)
                 } else {
+                    // FIXME: get another image
                     ContentUnavailableView("Cannot connet to server, try again later", image: "loading")
                 }
             }
+            .onAppear {
+                authViewModel.checkAuthentication()
+            }
         }
+        
     }
 }
 

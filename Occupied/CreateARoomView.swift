@@ -5,6 +5,7 @@
 //  Created by Fahim Uddin on 11/14/25.
 //
 
+import FirebaseAuth
 import SwiftUI
 
 struct CreateARoomView: View {
@@ -22,13 +23,16 @@ struct CreateARoomView: View {
                     roomViewModel.createARoom(
                         name: name,
                         joinCode: String(joinCode),
-                        isOccupied: isOccupied
+                        isOccupied: isOccupied, ownerID: Auth.auth().currentUser?.uid ?? "No user found"
                     )
                     dismiss()
                 }
                 .disabled(name.isEmpty)
             }
             .navigationTitle("Create a Room")
+            .onDisappear {
+                roomViewModel.fetchRooms()
+            }
         }
     }
 }
