@@ -14,4 +14,5 @@ struct Room: Codable {
     var joinCode: String?
     var isOccupied: Bool?
     var ownerID: String?
+    var members: [String]?
 }

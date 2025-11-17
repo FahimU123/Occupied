@@ -13,6 +13,7 @@ struct CreateARoomView: View {
     @Environment(\.dismiss) var dismiss
     @State private var name: String = ""
     @State private var isOccupied: Bool = false
+    @Binding var currentRoom: Room?
     var body: some View {
         NavigationStack {
             Form {
@@ -20,11 +21,22 @@ struct CreateARoomView: View {
                 Toggle("Status", isOn: $isOccupied)
                 Button("Create Room") {
                     let joinCode = UUID().uuidString.prefix(6)
-                    roomViewModel.createARoom(
+                    let newRoom = Room(
                         name: name,
                         joinCode: String(joinCode),
-                        isOccupied: isOccupied, ownerID: Auth.auth().currentUser?.uid ?? "No user found"
+                        isOccupied: isOccupied,
+                        ownerID: Auth.auth().currentUser?.uid ?? "No user found",
+                        members: []
                     )
+                    roomViewModel.createARoom(
+                        name: newRoom.name ?? "",
+                        joinCode: newRoom.joinCode ?? "",
+                        isOccupied: newRoom.isOccupied ?? false,
+                        ownerID: newRoom.ownerID ?? "",
+                        members: ["\(newRoom.ownerID ?? "")"]
+                    )
+                    currentRoom = newRoom
+                    // ?
                     dismiss()
                 }
                 .disabled(name.isEmpty)
@@ -38,5 +50,8 @@ struct CreateARoomView: View {
 }
 
 #Preview {
-    CreateARoomView(roomViewModel: RoomViewModel(rooms: []))
+    CreateARoomView(
+        roomViewModel: RoomViewModel(rooms: []),
+        currentRoom: .constant(nil)
+    )
 }

@@ -21,7 +21,10 @@ struct ContentView: View {
                         withAnimation {
                             currentRoom?.isOccupied?.toggle()
                         }
+                        
+                        roomViewModel.updateRoomOccupancy(room: currentRoom, isOccupied: currentRoom?.isOccupied ?? false)
                     } label: {
+                        // FIXME: Switch statement here for nil values
                         Image(currentRoom?.isOccupied ?? false ? "Occupied" : "Vacant")
                             .resizable()
                             .scaledToFit()
@@ -37,8 +40,12 @@ struct ContentView: View {
             .onDisappear {
                 save()
             }
+            .onChange(of: currentRoom?.isOccupied) {
+                roomViewModel.fetchRooms()
+            }
             .toolbar {
                 ToolbarItemGroup(placement: .primaryAction) {
+                    // check if this works!
                     if let currentRoom = currentRoom {
                         Button {
                             showDeleteAlert = true
@@ -48,7 +55,7 @@ struct ContentView: View {
                         // FIXME: Better message
                         .alert("Are you sure you want to leave this room?", isPresented: $showDeleteAlert) {
                             Button("OK", role: .destructive) {
-                                // Call deleteRoom func and pass in a room here
+                                // FIXME: after deleting chnage navigation title
                                 roomViewModel.deleteARoom(room: currentRoom)
                             }
                         }
@@ -67,9 +74,10 @@ struct ContentView: View {
                         Divider()
                         Menu("My Rooms") {
                             ForEach(roomViewModel.rooms, id: \.id) { room in
-                                // FIXME: Based on choice chnage current room
-                                Button(room.name ?? "Join or Create a Room") {
+                                Button {
                                     currentRoom = room
+                                } label: {
+                                    Text("\(room.name ?? "Join or Create a Room") (Join Code: \(room.joinCode ?? "N/A"))")
                                 }
                             }
                         }
@@ -79,13 +87,15 @@ struct ContentView: View {
                 }
             }
             .popover(isPresented: $showCreateARoomPopover) {
-                CreateARoomView(roomViewModel: roomViewModel)
+                CreateARoomView(roomViewModel: roomViewModel, currentRoom: $currentRoom)
             }
             .popover(isPresented: $showJoinARoomPopOver) {
-                JoinARoomView()
+                JoinARoomView(roomViewModel: roomViewModel)
             }
         }
     }
+    
+    // FIXME: work in progress
     func save() {
         if let currentRoom = currentRoom {
             if let encoded = try? JSONEncoder().encode(currentRoom) {
@@ -94,6 +104,7 @@ struct ContentView: View {
         }
     }
     
+    // FIXME: work in progress
     func retrieve() {
         if let savedRoom = UserDefaults.standard.data(forKey: "current_room"),
            let decodedRoom = try? JSONDecoder().decode(Room.self, from: savedRoom) {
@@ -103,5 +114,5 @@ struct ContentView: View {
 }
 
 #Preview {
-//    ContentView()
+    ContentView()
 }

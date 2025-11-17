@@ -22,8 +22,8 @@ class RoomViewModel {
         self.rooms = rooms
     }
     
-    func createARoom(name: String, joinCode: String, isOccupied: Bool, ownerID: String) {
-        let newRoom = Room(name: name, joinCode: joinCode, isOccupied: isOccupied, ownerID: ownerID)
+    func createARoom(name: String, joinCode: String, isOccupied: Bool, ownerID: String, members: [String]) {
+        let newRoom = Room(name: name, joinCode: joinCode, isOccupied: isOccupied, ownerID: ownerID, members: members)
         
         do {
             _ = try db.collection("Room").addDocument(from: newRoom)
@@ -32,9 +32,10 @@ class RoomViewModel {
         }
     }
     
+    
     func fetchRooms() {
         db.collection("Room")
-            .whereField("ownerID", isEqualTo: Auth.auth().currentUser?.uid ?? "fetching room did not work")
+            .whereField("members", arrayContains: Auth.auth().currentUser?.uid ?? "could not fetch rooms")
             .addSnapshotListener { (querySnapshot, error) in
             guard let documents = querySnapshot?.documents else {
                 AppLogger.logger.info("No documents")
@@ -48,25 +49,56 @@ class RoomViewModel {
                 let joinCode = data["joinCode"] as? String ?? "No Code Found"
                 let isOccupied = data["isOccupied"] as? Bool ?? false
                 let ownerID = data["ownerID"] as? String ?? "No owner for room found"
+                let members = data["members"] as? [String] ?? []
             
-                self.rooms.append(Room(name: name, joinCode: joinCode, isOccupied: isOccupied))
-                return Room(id: id, name: name, joinCode: joinCode, isOccupied: isOccupied, ownerID: ownerID)
+                self.rooms.append(Room(name: name, joinCode: joinCode, isOccupied: isOccupied, members: members))
+                return Room(id: id, name: name, joinCode: joinCode, isOccupied: isOccupied, ownerID: ownerID, members: members)
             }
         }
     }
     
-    func joinARoom() {
+    func joinARoom(joinCode: String) {
+        print("tryna join a room")
+        guard let userID = Auth.auth().currentUser?.uid else { return }
+        db.collection("Room")
+            .whereField("joinCode", isEqualTo: joinCode)
+            .getDocuments { (snapshot, error) in
+                guard let document = snapshot?.documents.first else {
+                    return
+                }
+                document.reference.updateData([
+                    "members": FieldValue.arrayUnion([userID])
+                ])
+            }
+    }
+    
+    func updateRoomOccupancy(room: Room?, isOccupied: Bool) {
+        guard let roomID = room?.id else {
+            AppLogger.logger.error("Error: Room is missing a document ID.")
+            return
+        }
+        let roomRef = db.collection("Room").document(roomID)
+        
+        roomRef.updateData(["isOccupied": isOccupied]) { error in
+            if let error = error {
+                AppLogger.logger.error("Error updating room occupancy: \(error.localizedDescription)")
+            } else {
+                print("Successfully updated occupancy for room ID: \(roomID) to \(isOccupied)")
+            }
+        }
+    }
+    
+    // remove yourself from the members array but if you are owner then what
+    func leaveRoom(room: Room) {
         
     }
     
-    func checkIntoRoom() {
+    // removes a UID from the members array
+    func kickOutOfRoom(room: Room) {
         
     }
     
-    func checkOutOfRom() {
-        
-    }
-    
+    // FIXME: allow only if owner
     func deleteARoom(room: Room) {
         guard let roomID = room.id else { return }
         
