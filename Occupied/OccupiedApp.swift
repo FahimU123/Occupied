@@ -47,3 +47,4 @@ struct YourApp: App {
 // What if someone forgets to check out
 // What do we show if no room joined at all
 // Real time isOcuupied toggle on multiple devices
+// cannot delet ubsless you are owner

@@ -51,7 +51,6 @@ class RoomViewModel {
                 let ownerID = data["ownerID"] as? String ?? "No owner for room found"
                 let members = data["members"] as? [String] ?? []
             
-                self.rooms.append(Room(name: name, joinCode: joinCode, isOccupied: isOccupied, members: members))
                 return Room(id: id, name: name, joinCode: joinCode, isOccupied: isOccupied, ownerID: ownerID, members: members)
             }
         }
@@ -72,7 +71,7 @@ class RoomViewModel {
             }
     }
     
-    func updateRoomOccupancy(room: Room?, isOccupied: Bool) {
+    func updateRoomOccupancy(for room: Room?, isOccupied: Bool) {
         guard let roomID = room?.id else {
             AppLogger.logger.error("Error: Room is missing a document ID.")
             return

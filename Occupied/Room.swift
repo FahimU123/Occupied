@@ -8,7 +8,7 @@
 import FirebaseFirestore
 import Foundation
 
-struct Room: Codable {
+struct Room: Codable, Equatable {
     @DocumentID var id: String?
     var name: String?
     var joinCode: String?

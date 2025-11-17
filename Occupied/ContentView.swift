@@ -22,7 +22,7 @@ struct ContentView: View {
                             currentRoom?.isOccupied?.toggle()
                         }
                         
-                        roomViewModel.updateRoomOccupancy(room: currentRoom, isOccupied: currentRoom?.isOccupied ?? false)
+                        roomViewModel.updateRoomOccupancy(for: currentRoom, isOccupied: currentRoom?.isOccupied ?? false)
                     } label: {
                         // FIXME: Switch statement here for nil values
                         Image(currentRoom?.isOccupied ?? false ? "Occupied" : "Vacant")
@@ -40,12 +40,15 @@ struct ContentView: View {
             .onDisappear {
                 save()
             }
-            .onChange(of: currentRoom?.isOccupied) {
-                roomViewModel.fetchRooms()
+            .onChange(of: roomViewModel.rooms) { _, newRooms in
+                if let oldRoomID = currentRoom?.id,
+                   let updatedRoom = newRooms.first(where: { $0.id == oldRoomID }) {
+                    currentRoom = updatedRoom
+                }
             }
             .toolbar {
                 ToolbarItemGroup(placement: .primaryAction) {
-                    // check if this works!
+                    // FIXME: check if this works!
                     if let currentRoom = currentRoom {
                         Button {
                             showDeleteAlert = true
