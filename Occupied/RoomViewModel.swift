@@ -71,19 +71,17 @@ class RoomViewModel {
             }
     }
     
-    func updateRoomOccupancy(for room: Room?, isOccupied: Bool) {
+    func updateRoomOccupancy(for room: Room?, isOccupied: Bool) async {
         guard let roomID = room?.id else {
             AppLogger.logger.error("Error: Room is missing a document ID.")
             return
         }
         let roomRef = db.collection("Room").document(roomID)
         
-        roomRef.updateData(["isOccupied": isOccupied]) { error in
-            if let error = error {
-                AppLogger.logger.error("Error updating room occupancy: \(error.localizedDescription)")
-            } else {
-                print("Successfully updated occupancy for room ID: \(roomID) to \(isOccupied)")
-            }
+        do {
+            try await roomRef.updateData(["isOccupied": isOccupied])
+        } catch {
+            AppLogger.logger.error("Error updating room occupancy: \(error.localizedDescription)")
         }
     }
     

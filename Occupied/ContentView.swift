@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    // can removestate since onservable? test later
     @State private var roomViewModel = RoomViewModel(rooms: [])
     @State private var currentRoom: Room?
     @State private var showCreateARoomPopover = false
@@ -22,7 +23,9 @@ struct ContentView: View {
                             currentRoom?.isOccupied?.toggle()
                         }
                         
-                        roomViewModel.updateRoomOccupancy(for: currentRoom, isOccupied: currentRoom?.isOccupied ?? false)
+                        Task {
+                            await roomViewModel.updateRoomOccupancy(for: currentRoom, isOccupied: currentRoom?.isOccupied ?? false)
+                        }
                     } label: {
                         // FIXME: Switch statement here for nil values
                         Image(currentRoom?.isOccupied ?? false ? "Occupied" : "Vacant")
@@ -63,7 +66,7 @@ struct ContentView: View {
                             }
                         }
                     }
-               
+                    
                     Menu {
                         Button("Create a Room") {
                             showCreateARoomPopover = true
