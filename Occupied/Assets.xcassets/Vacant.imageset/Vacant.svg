@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="215px" height="276px" viewBox="0 0 215 276" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Group</title>
+    <g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="iPhone-16-Pro" transform="translate(-93, -230)">
+            <g id="Group" transform="translate(93, 230)">
+                <g>
+                    <rect id="Rectangle" fill="#000000" x="0" y="268" width="215" height="8" rx="4"></rect>
+                    <rect id="Rectangle-2" fill="#000000" x="38" y="0" width="139" height="268"></rect>
+                    <line x1="39.5" y1="1.5" x2="126.5" y2="25.5" id="Line" stroke="#000000" stroke-linecap="square"></line>
+                    <line x1="38.5" y1="268.5" x2="126.5" y2="238.5" id="Line-2" stroke="#000000" stroke-linecap="square"></line>
+                    <line x1="126.5" y1="238.5" x2="126.5" y2="25.5" id="Line-3" stroke="#000000" stroke-linecap="square"></line>
+                </g>
+                <polygon id="Path" fill="#DECAAB" points="39.5 1.5 126.5 25.5 126.5001 238.5 39.5 268.5"></polygon>
+                <g transform="translate(52, 52)">
+                    <rect id="Rectangle-4" fill="#28CD41" x="0" y="0" width="65" height="18" rx="5"></rect>
+                    <g transform="translate(8, 2)" fill="#FFFFFF" font-family="Helvetica" font-size="12" font-weight="normal" id="VACANT">
+                        <text>
+                            <tspan x="0" y="11">VACANT</tspan>
+                        </text>
+                    </g>
+                </g>
+                <rect id="Rectangle-3" fill="#FFFFFF" x="108" y="146" width="9" height="39" rx="4.5"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

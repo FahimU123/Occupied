@@ -57,7 +57,6 @@ class RoomViewModel {
     }
     
     func joinARoom(joinCode: String) {
-        print("tryna join a room")
         guard let userID = Auth.auth().currentUser?.uid else { return }
         db.collection("Room")
             .whereField("joinCode", isEqualTo: joinCode)
@@ -85,24 +84,42 @@ class RoomViewModel {
         }
     }
     
-    // remove yourself from the members array but if you are owner then what
-    func leaveRoom(room: Room) {
-        
+    func leaveRoom(room: Room?) async {
+        guard let roomID = room?.id else {
+            AppLogger.logger.error("Error: Room is missing a document ID.")
+            return
+        }
+        guard let userID = Auth.auth().currentUser?.uid else {
+            AppLogger.logger.error("Error: Could not get current user ID.")
+            return
+        }
+        let roomRef = db.collection("Room").document(roomID)
+        do {
+            try await roomRef.updateData(["members": FieldValue.arrayRemove([userID])])
+        } catch {
+            AppLogger.logger.error("Error updating room occupancy: \(error.localizedDescription)")
+        }
     }
     
     // removes a UID from the members array
     func kickOutOfRoom(room: Room) {
-        
+        guard let roomID = room.id else { return }
+        guard let ownerID = room.ownerID else { return }
+        // gotta see all the memebrs and select through them, have a bulk dlete too for that field
     }
     
-    // FIXME: allow only if owner
     func deleteARoom(room: Room) {
         guard let roomID = room.id else { return }
-        
-        db.collection("Room").document(roomID).delete() { error in
-            if let error = error {
-                AppLogger.logger.error("Error deleting room \(error.localizedDescription)")
+        guard let ownerID = room.ownerID else { return }
+        let currentUserID = Auth.auth().currentUser?.uid
+        if ownerID == currentUserID {
+            db.collection("Room").document(roomID).delete { error in
+                if let error = error {
+                    AppLogger.logger.error("Error deleting room \(error.localizedDescription)")
+                }
             }
+        } else {
+            
         }
     }
 }

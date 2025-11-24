@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="215px" height="276px" viewBox="0 0 215 276" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Group</title>
+    <g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="iPhone-16-Pro" transform="translate(-93, -230)">
+            <g id="Group" transform="translate(93, 230)">
+                <g>
+                    <rect id="Rectangle" fill="#000000" x="0" y="268" width="215" height="8" rx="4"></rect>
+                    <rect id="Rectangle-2" fill="#DECAAB" x="38" y="0" width="139" height="268"></rect>
+                    <g transform="translate(67, 59)">
+                        <rect id="Rectangle-2" fill="#FF3B30" x="0" y="0" width="82" height="18" rx="5"></rect>
+                        <text id="OCCUPIED" font-family="Helvetica" font-size="12" font-weight="normal" fill="#FFFFFF">
+                            <tspan x="9" y="13">OCCUPIED</tspan>
+                        </text>
+                    </g>
+                </g>
+                <rect id="Rectangle-3" fill="#FFFFFF" x="156" y="168" width="9" height="39" rx="4.5"></rect>
+            </g>
+        </g>
+    </g>
+</svg>
