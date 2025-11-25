@@ -9,14 +9,15 @@ import FirebaseAuth
 import SwiftUI
 
 struct CreateARoomView: View {
+    @Environment(\.dismiss) var dismiss
     var roomViewModel: RoomViewModel
     @State private var name: String = ""
     @State private var isOccupied: Bool = false
+    @Binding var currentRoom: Room?
     var body: some View {
         NavigationStack {
             Form {
                 TextField("Name", text: $name)
-                Toggle("Status", isOn: $isOccupied)
                 Button("Create Room") {
                     let joinCode = UUID().uuidString.prefix(6)
                     let newRoom = Room(
@@ -33,6 +34,10 @@ struct CreateARoomView: View {
                         ownerID: newRoom.ownerID ?? "",
                         members: ["\(newRoom.ownerID ?? "")"]
                     )
+                    
+                    currentRoom = newRoom
+                    
+                    dismiss()
                 }
                 .disabled(name.isEmpty)
             }

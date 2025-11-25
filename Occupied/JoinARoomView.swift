@@ -18,6 +18,7 @@ struct JoinARoomView: View {
                 TextField("Enter Room Code", text: $code)
                     .onSubmit {
                         roomViewModel.joinARoom(joinCode: code)
+                        
                     }
                     .focused($isInputActive)
                     .toolbar {

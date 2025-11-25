@@ -12,8 +12,6 @@ struct ContentView: View {
     // can removestate since onservable? test later
     @State private var roomViewModel = RoomViewModel(rooms: [])
     @State private var currentRoom: Room? = nil
-
-
     @State private var showSettingsPopover = false
     
     
@@ -21,7 +19,9 @@ struct ContentView: View {
         NavigationStack {
             ZStack {
                 VStack {
-                    Text("Switch")
+                    Text(currentRoom?.isOccupied ?? false
+                         ? "This room is currently occupied. Please wait until it's vacant."
+                         : "Tap below to book the room.")
                     Button {
                         Task {
                             withAnimation {
@@ -68,16 +68,16 @@ struct ContentView: View {
                         Image(systemName: "chevron.down")
                     }
                     
-                        Button {
-                            showSettingsPopover = true
-                        } label: {
-                            Image(systemName: "gear")
-                        }
+                    Button {
+                        showSettingsPopover = true
+                    } label: {
+                        Image(systemName: "gear")
+                    }
                 }
             }
             .popover(isPresented: $showSettingsPopover) {
                 SettingsView(
-                    currentRoom: $currentRoom, // Pass the binding here
+                    currentRoom: $currentRoom,
                     roomViewModel: roomViewModel
                 )
             }

@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct SettingsView: View {
     @Binding var currentRoom: Room?
     var roomViewModel: RoomViewModel
     
+    @State private var showDeleteDialog = false
     @State private var showJoinARoomPopOver = false
     @State private var showCreateARoomPopover = false
     @State private var showLeaveAlert = false
@@ -27,7 +29,7 @@ struct SettingsView: View {
                         } label: {
                             Text("Leave Room")
                         }
-                        .disabled(currentRoom == nil)
+                        .disabled(currentRoom == nil || Auth.auth().currentUser?.uid == currentRoom?.ownerID)
                         .alert("Confirm You Want to Leave this Room", isPresented: $showLeaveAlert) {
                             Button("Leave", role: .destructive) {
                                 Task {
@@ -38,6 +40,23 @@ struct SettingsView: View {
                             }
                         } message: {
                             Text("Are you sure you want to leave this room? You will need the code to rejoin.")
+                        }
+                        Button {
+                            showDeleteDialog = true
+                        } label: {
+                            Text("Delete Room")
+                        }
+                        .disabled(Auth.auth().currentUser?.uid != currentRoom?.ownerID || currentRoom == nil)
+                        .confirmationDialog(
+                            "Are you sure?",
+                            isPresented: $showDeleteDialog,
+                            titleVisibility: .visible
+                        ) {
+                            Button("Yes", role: .destructive) {
+                                roomViewModel.deleteARoom(room: currentRoom ?? Room())
+                                currentRoom = roomViewModel.rooms.randomElement()
+                             
+                            }
                         }
                     }
                     
@@ -58,7 +77,7 @@ struct SettingsView: View {
             }
             // Attach popovers to the List or VStack so they present correctly over Settings
             .popover(isPresented: $showCreateARoomPopover) {
-                CreateARoomView(roomViewModel: roomViewModel)
+                CreateARoomView(roomViewModel: roomViewModel, currentRoom: $currentRoom)
             }
             .popover(isPresented: $showJoinARoomPopOver) {
                 JoinARoomView(roomViewModel: roomViewModel)
