@@ -11,16 +11,17 @@ import FirebaseAuth
 struct ContentView: View {
     // can removestate since onservable? test later
     @State private var roomViewModel = RoomViewModel(rooms: [])
-    @State private var currentRoom: Room?
-    @State private var showCreateARoomPopover = false
-    @State private var showJoinARoomPopOver = false
-    @State private var showDeleteAlert = false
-    @State private var showLeaveAlert = false
+    @State private var currentRoom: Room? = nil
+
+
+    @State private var showSettingsPopover = false
+    
     
     var body: some View {
         NavigationStack {
             ZStack {
                 VStack {
+                    Text("Switch")
                     Button {
                         Task {
                             withAnimation {
@@ -39,6 +40,9 @@ struct ContentView: View {
                 }
             }
             .navigationTitle(currentRoom?.name ?? "Join or Create a Room")
+            // style
+            .navigationBarTitleDisplayMode(.inline)
+            
             .onAppear {
                 roomViewModel.fetchRooms()
                 retrieve()
@@ -53,68 +57,29 @@ struct ContentView: View {
                 }
             }
             .toolbar {
-                Menu {
-                    Button("Create a Room") {
-                        showCreateARoomPopover = true
-                    }
-                    
-                    Button {
-                        showJoinARoomPopOver = true
-                    } label: {
-                        Text("Join a Room")
-                    }
-                    Divider()
-                    Menu("My Rooms") {
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Menu {
                         ForEach(roomViewModel.rooms, id: \.id) { room in
-                            let isOwner = room.ownerID == Auth.auth().currentUser?.uid
-             
-                            Menu(room.name ?? "Unnamed Room") {
-                                Button("Select Room") {
-                                    currentRoom = room
-                                }
-                                Button("Show Join Code") {
-                                    UIPasteboard.general.string = room.joinCode ?? "N/A"
-                                }
-                                if isOwner {
-                                    Button(role: .destructive) {
-                                        showDeleteAlert = true
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-                                    .alert("Are you sure you want to delete this room?", isPresented: $showDeleteAlert) {
-                                        Button("OK", role: .destructive) {
-                                            // FIXME: after deleting chnage navigation title
-                                            roomViewModel.deleteARoom(room: room)
-                                        }
-                                    } 
-                                } else {
-                                    Button(role: .destructive) {
-                                        Task {
-                                            await roomViewModel.leaveRoom(room: room)
-                                        }
-                                    } label: {
-                                        Label("Leave", systemImage: "rectangle.portrait.and.arrow.right")
-                                    }
-                                    .alert("Are you sure you want to leave this room?", isPresented: $showDeleteAlert) {
-                                        Button("OK", role: .destructive) {
-                                            Task {
-                                                await roomViewModel.leaveRoom(room: room)
-                                            }
-                                        }
-                                    }
-                                }
+                            Button(room.name ?? "Unnamed Room") {
+                                currentRoom = room
                             }
                         }
+                    } label: {
+                        Image(systemName: "chevron.down")
                     }
-                } label: {
-                    Image(systemName: "ellipsis")
+                    
+                        Button {
+                            showSettingsPopover = true
+                        } label: {
+                            Image(systemName: "gear")
+                        }
                 }
             }
-            .popover(isPresented: $showCreateARoomPopover) {
-                CreateARoomView(roomViewModel: roomViewModel, currentRoom: $currentRoom)
-            }
-            .popover(isPresented: $showJoinARoomPopOver) {
-                JoinARoomView(roomViewModel: roomViewModel)
+            .popover(isPresented: $showSettingsPopover) {
+                SettingsView(
+                    currentRoom: $currentRoom, // Pass the binding here
+                    roomViewModel: roomViewModel
+                )
             }
         }
     }

@@ -10,10 +10,8 @@ import SwiftUI
 
 struct CreateARoomView: View {
     var roomViewModel: RoomViewModel
-    @Environment(\.dismiss) var dismiss
     @State private var name: String = ""
     @State private var isOccupied: Bool = false
-    @Binding var currentRoom: Room?
     var body: some View {
         NavigationStack {
             Form {
@@ -35,9 +33,6 @@ struct CreateARoomView: View {
                         ownerID: newRoom.ownerID ?? "",
                         members: ["\(newRoom.ownerID ?? "")"]
                     )
-                    currentRoom = newRoom
-                    // ?
-                    dismiss()
                 }
                 .disabled(name.isEmpty)
             }
@@ -49,9 +44,9 @@ struct CreateARoomView: View {
     }
 }
 
-#Preview {
-    CreateARoomView(
-        roomViewModel: RoomViewModel(rooms: []),
-        currentRoom: .constant(nil)
-    )
-}
+//#Preview {
+//    CreateARoomView(
+//        roomViewModel: RoomViewModel(rooms: []),
+//        currentRoom: .constant(nil)
+//    )
+//}
