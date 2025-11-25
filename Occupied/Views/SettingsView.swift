@@ -15,7 +15,7 @@ struct SettingsView: View {
     @State private var showDeleteDialog = false
     @State private var showJoinARoomPopOver = false
     @State private var showCreateARoomPopover = false
-    @State private var showLeaveAlert = false
+    @State private var showLeaveDialog = false
     
     var body: some View {
         NavigationStack {
@@ -25,21 +25,23 @@ struct SettingsView: View {
                         Text("Room Code: \(currentRoom?.joinCode ?? "N/A")")
                         
                         Button {
-                            showLeaveAlert = true
+                            showLeaveDialog = true
                         } label: {
                             Text("Leave Room")
                         }
                         .disabled(currentRoom == nil || Auth.auth().currentUser?.uid == currentRoom?.ownerID)
-                        .alert("Confirm You Want to Leave this Room", isPresented: $showLeaveAlert) {
-                            Button("Leave", role: .destructive) {
+                        .confirmationDialog(
+                            "Are you sure?",
+                            isPresented: $showLeaveDialog,
+                            titleVisibility: .visible
+                        ) {
+                            Button("Yes", role: .destructive) {
                                 Task {
                                     await roomViewModel.leaveRoom(room: currentRoom)
+                                    currentRoom = roomViewModel.rooms.randomElement()
                                 }
+                                
                             }
-                            Button("Cancel", role: .cancel) {
-                            }
-                        } message: {
-                            Text("Are you sure you want to leave this room? You will need the code to rejoin.")
                         }
                         Button {
                             showDeleteDialog = true
@@ -75,7 +77,6 @@ struct SettingsView: View {
                     }
                 }
             }
-            // Attach popovers to the List or VStack so they present correctly over Settings
             .popover(isPresented: $showCreateARoomPopover) {
                 CreateARoomView(roomViewModel: roomViewModel, currentRoom: $currentRoom)
             }
