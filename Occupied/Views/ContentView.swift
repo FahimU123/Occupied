@@ -18,9 +18,8 @@ struct ContentView: View {
         NavigationStack {
             ZStack {
                 VStack {
-                    // if nil then sum
                     if currentRoom == nil {
-                        Text("Join or Create a Room")
+                        Text("Tap Settings Icon to Join or Create a Room")
                             .padding()
                     } else {
                         Text(currentRoom?.isOccupied ?? false
@@ -72,16 +71,17 @@ struct ContentView: View {
                         Image(systemName: "gear")
                     }
                 }
-                
-                ToolbarItemGroup(placement: .topBarLeading) {
-                    Menu {
-                        ForEach(roomViewModel.rooms, id: \.id) { room in
-                            Button(room.name ?? "Unnamed Room") {
-                                currentRoom = room
+                if roomViewModel.rooms.count >= 2 {
+                    ToolbarItemGroup(placement: .topBarLeading) {
+                        Menu {
+                            ForEach(roomViewModel.rooms, id: \.id) { room in
+                                Button(room.name ?? "Unnamed Room") {
+                                    currentRoom = room
+                                }
                             }
+                        } label: {
+                            Image(systemName: "chevron.down")
                         }
-                    } label: {
-                        Image(systemName: "chevron.down")
                     }
                 }
             }
