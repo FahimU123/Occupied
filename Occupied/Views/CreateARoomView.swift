@@ -16,30 +16,36 @@ struct CreateARoomView: View {
     @Binding var currentRoom: Room?
     var body: some View {
         NavigationStack {
-            Form {
-                TextField("Name", text: $name)
-                Button("Create Room") {
-                    let joinCode = UUID().uuidString.prefix(6)
-                    let newRoom = Room(
-                        name: name,
-                        joinCode: String(joinCode),
-                        isOccupied: isOccupied,
-                        ownerID: Auth.auth().currentUser?.uid ?? "No user found",
-                        members: []
-                    )
-                    roomViewModel.createARoom(
-                        name: newRoom.name ?? "",
-                        joinCode: newRoom.joinCode ?? "",
-                        isOccupied: newRoom.isOccupied ?? false,
-                        ownerID: newRoom.ownerID ?? "",
-                        members: ["\(newRoom.ownerID ?? "")"]
-                    )
-                    
-                    currentRoom = newRoom
-                    
-                    dismiss()
+            VStack {
+                Text("Enter a Code to Join a Room")
+                    .font(.title)
+                    .padding()
+                Form {
+                    TextField("Name", text: $name)
+                        .textFieldStyle(.roundedBorder)
+                    Button("Create Room") {
+                        let joinCode = UUID().uuidString.prefix(6)
+                        let newRoom = Room(
+                            name: name,
+                            joinCode: String(joinCode),
+                            isOccupied: isOccupied,
+                            ownerID: Auth.auth().currentUser?.uid ?? "No user found",
+                            members: []
+                        )
+                        roomViewModel.createARoom(
+                            name: newRoom.name ?? "",
+                            joinCode: newRoom.joinCode ?? "",
+                            isOccupied: newRoom.isOccupied ?? false,
+                            ownerID: newRoom.ownerID ?? "",
+                            members: ["\(newRoom.ownerID ?? "")"]
+                        )
+                        
+                        currentRoom = newRoom
+                        
+                        dismiss()
+                    }
+                    .disabled(name.isEmpty)
                 }
-                .disabled(name.isEmpty)
             }
             .navigationTitle("Create a Room")
             .onDisappear {
