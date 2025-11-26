@@ -11,7 +11,6 @@ import FirebaseAuth
 struct SettingsView: View {
     @Binding var currentRoom: Room?
     var roomViewModel: RoomViewModel
-    
     @State private var showDeleteDialog = false
     @State private var showJoinARoomPopOver = false
     @State private var showCreateARoomPopover = false
@@ -21,6 +20,20 @@ struct SettingsView: View {
         NavigationStack {
             VStack {
                 List {
+                    Section("General") {
+                        Button {
+                            showJoinARoomPopOver = true
+                        } label: {
+                            Text("Join Room")
+                        }
+                        
+                        Button {
+                            showCreateARoomPopover = true
+                        } label: {
+                            Text("Create a Room")
+                        }
+                    }
+                    
                     Section("Current Room: \(currentRoom?.name ?? "Unavailable") ") {
                         Text("Room Code: \(currentRoom?.joinCode ?? "N/A")")
                         
@@ -59,20 +72,6 @@ struct SettingsView: View {
                                 currentRoom = roomViewModel.rooms.randomElement()
                              
                             }
-                        }
-                    }
-                    
-                    Section("General") {
-                        Button {
-                            showJoinARoomPopOver = true
-                        } label: {
-                            Text("Join Room")
-                        }
-                        
-                        Button {
-                            showCreateARoomPopover = true
-                        } label: {
-                            Text("Create a Room")
                         }
                     }
                 }

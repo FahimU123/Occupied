@@ -9,7 +9,6 @@ import SwiftUI
 import FirebaseAuth
 
 struct ContentView: View {
-    // can removestate since onservable? test later
     @State private var roomViewModel = RoomViewModel(rooms: [])
     @State private var currentRoom: Room? = nil
     @State private var showSettingsPopover = false
@@ -19,9 +18,18 @@ struct ContentView: View {
         NavigationStack {
             ZStack {
                 VStack {
-                    Text(currentRoom?.isOccupied ?? false
-                         ? "This room is currently occupied. Please wait until it's vacant."
-                         : "Tap below to book the room.")
+                    // if nil then sum
+                    if currentRoom == nil {
+                        Text("Join or Create a Room")
+                            .padding()
+                    } else {
+                        Text(currentRoom?.isOccupied ?? false
+                             ? "This room is currently occupied. Please wait until it's vacant."
+                             : "Tap below to book the room.")
+                        .padding()
+                        .multilineTextAlignment(.center)
+                    }
+                    
                     Button {
                         Task {
                             withAnimation {
@@ -39,7 +47,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .navigationTitle(currentRoom?.name ?? "Join or Create a Room")
+            .navigationTitle(currentRoom?.name ?? "")
             // style
             .navigationBarTitleDisplayMode(.inline)
             
@@ -58,6 +66,14 @@ struct ContentView: View {
             }
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button {
+                        showSettingsPopover = true
+                    } label: {
+                        Image(systemName: "gear")
+                    }
+                }
+                
+                ToolbarItemGroup(placement: .topBarLeading) {
                     Menu {
                         ForEach(roomViewModel.rooms, id: \.id) { room in
                             Button(room.name ?? "Unnamed Room") {
@@ -66,12 +82,6 @@ struct ContentView: View {
                         }
                     } label: {
                         Image(systemName: "chevron.down")
-                    }
-                    
-                    Button {
-                        showSettingsPopover = true
-                    } label: {
-                        Image(systemName: "gear")
                     }
                 }
             }
