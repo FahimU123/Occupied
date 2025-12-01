@@ -35,10 +35,10 @@ struct ContentView: View {
                                 currentRoom?.isOccupied?.toggle()
                             }
                             await roomViewModel.updateRoomOccupancy(for: currentRoom, isOccupied: currentRoom?.isOccupied ?? false)
+                            
                         }
                     } label: {
                         // FIXME: Switch statement here for nil values
-                        
                         Image(currentRoom?.isOccupied ?? false ? "Occupied" : "Vacant")
                             .resizable()
                             .scaledToFit()
@@ -47,7 +47,6 @@ struct ContentView: View {
                 }
             }
             .navigationTitle(currentRoom?.name ?? "")
-            // style
             .navigationBarTitleDisplayMode(.inline)
             
             .onAppear {
@@ -71,6 +70,7 @@ struct ContentView: View {
                         Image(systemName: "gear")
                     }
                 }
+                
                 if roomViewModel.rooms.count >= 2 {
                     ToolbarItemGroup(placement: .topBarLeading) {
                         Menu {

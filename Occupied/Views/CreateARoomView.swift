@@ -17,12 +17,8 @@ struct CreateARoomView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Text("Enter a Code to Join a Room")
-                    .font(.title)
-                    .padding()
                 Form {
                     TextField("Name", text: $name)
-                        .textFieldStyle(.roundedBorder)
                     Button("Create Room") {
                         let joinCode = UUID().uuidString.prefix(6)
                         let newRoom = Room(
