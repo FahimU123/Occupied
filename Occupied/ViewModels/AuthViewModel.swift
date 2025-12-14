@@ -9,7 +9,6 @@ import os
 import FirebaseAuth
 import Foundation
 
-
 @Observable
 class AuthViewModel {
     var isAuthenticated = false

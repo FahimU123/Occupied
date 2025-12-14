@@ -12,37 +12,43 @@ struct ContentView: View {
     @State private var roomViewModel = RoomViewModel(rooms: [])
     @State private var currentRoom: Room? = nil
     @State private var showSettingsPopover = false
-    
+    @State private var showIsOccupiedConfimation = false
     
     var body: some View {
         NavigationStack {
             ZStack {
                 VStack {
                     if currentRoom == nil {
-                        Text("Tap Settings Icon to Join or Create a Room")
+                        Text("Welcome! Tap the settings icon to join an existing room or create a new one.")
+                            .multilineTextAlignment(.center)
                             .padding()
                     } else {
                         Text(currentRoom?.isOccupied ?? false
-                             ? "This room is currently occupied. Please wait until it's vacant."
-                             : "Tap below to book the room.")
+                             ? "Only mark vacant if you used it."
+                             : "Tap to book only if using.")
                         .padding()
                         .multilineTextAlignment(.center)
                     }
                     
                     Button {
-                        Task {
-                            withAnimation {
-                                currentRoom?.isOccupied?.toggle()
-                            }
-                            await roomViewModel.updateRoomOccupancy(for: currentRoom, isOccupied: currentRoom?.isOccupied ?? false)
-                            
-                        }
+                        showIsOccupiedConfimation = true
                     } label: {
                         // FIXME: Switch statement here for nil values
                         Image(currentRoom?.isOccupied ?? false ? "Occupied" : "Vacant")
                             .resizable()
                             .scaledToFit()
                             .padding()
+                    }
+                    // fixme: chnage message
+                    .confirmationDialog("Are you sure?", isPresented: $showIsOccupiedConfimation, titleVisibility: .visible) {
+                        Button("Yes", role: .confirm) {
+                            Task {
+                                withAnimation {
+                                    currentRoom?.isOccupied?.toggle()
+                                }
+                                await roomViewModel.updateRoomOccupancy(for: currentRoom, isOccupied: currentRoom?.isOccupied ?? false)
+                            }
+                        }
                     }
                 }
             }

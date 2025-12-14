@@ -17,6 +17,8 @@ class RoomViewModel {
     
     var rooms: [Room]
     
+    var showJoinCodeError: Bool = false
+    
     init(db: Firestore = Firestore.firestore(), rooms: [Room]) {
         self.db = db
         self.rooms = rooms
@@ -37,31 +39,40 @@ class RoomViewModel {
         db.collection("Room")
             .whereField("members", arrayContains: Auth.auth().currentUser?.uid ?? "could not fetch rooms")
             .addSnapshotListener { (querySnapshot, error) in
-            guard let documents = querySnapshot?.documents else {
-                AppLogger.logger.info("No documents")
-                return
+                guard let documents = querySnapshot?.documents else {
+                    AppLogger.logger.info("No documents")
+                    return
+                }
+                
+                self.rooms = documents.map { queryDocumentSnapshot -> Room in
+                    let data = queryDocumentSnapshot.data()
+                    let id = queryDocumentSnapshot.documentID
+                    let name = data["name"] as? String ?? "No Room Found"
+                    let joinCode = data["joinCode"] as? String ?? "No Code Found"
+                    let isOccupied = data["isOccupied"] as? Bool ?? false
+                    let ownerID = data["ownerID"] as? String ?? "No owner for room found"
+                    let members = data["members"] as? [String] ?? []
+                    
+                    return Room(id: id, name: name, joinCode: joinCode, isOccupied: isOccupied, ownerID: ownerID, members: members)
+                }
             }
-            
-            self.rooms = documents.map { queryDocumentSnapshot -> Room in
-                let data = queryDocumentSnapshot.data()
-                let id = queryDocumentSnapshot.documentID
-                let name = data["name"] as? String ?? "No Room Found"
-                let joinCode = data["joinCode"] as? String ?? "No Code Found"
-                let isOccupied = data["isOccupied"] as? Bool ?? false
-                let ownerID = data["ownerID"] as? String ?? "No owner for room found"
-                let members = data["members"] as? [String] ?? []
-            
-                return Room(id: id, name: name, joinCode: joinCode, isOccupied: isOccupied, ownerID: ownerID, members: members)
-            }
-        }
+    }
+    
+    func roomCodeCheck(code: String) {
+        
     }
     
     func joinARoom(joinCode: String) {
-        guard let userID = Auth.auth().currentUser?.uid else { return }
+        guard let userID = Auth.auth().currentUser?.uid else {
+            return
+        }
+        
         db.collection("Room")
             .whereField("joinCode", isEqualTo: joinCode)
             .getDocuments { (snapshot, error) in
                 guard let document = snapshot?.documents.first else {
+                    self.showJoinCodeError = true
+                    print("error worn groom code")
                     return
                 }
                 document.reference.updateData([

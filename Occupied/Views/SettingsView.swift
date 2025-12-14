@@ -15,22 +15,81 @@ struct SettingsView: View {
     @State private var showJoinARoomPopOver = false
     @State private var showCreateARoomPopover = false
     @State private var showLeaveDialog = false
+    @State var code: String = ""
+    @State private var showWrongCodeAlert = false
+    @State private var name: String = ""
+    @State private var isOccupied: Bool = false
+    @Environment(\.dismiss) var dismiss
     
     var body: some View {
         NavigationStack {
             VStack {
                 List {
                     Section("General") {
-                        Button {
-                            showJoinARoomPopOver = true
-                        } label: {
-                            Text("Join Room")
+                        DisclosureGroup("Join a Room") {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text("Ask the host for their unique code.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                
+                                TextField("Enter 6-digit Code", text: $code)
+                                    .textFieldStyle(.roundedBorder)
+                                    .textInputAutocapitalization(.characters)
+                                    .autocorrectionDisabled()
+                                    .onSubmit {
+                                        roomViewModel.joinARoom(joinCode: code)
+                                        if roomViewModel.showJoinCodeError {
+                                            showWrongCodeAlert = true
+                                        } else {
+                                            dismiss()
+                                        }
+                                    }
+                                    .alert("Wrong Code", isPresented: $showWrongCodeAlert) {
+                                        Button(role: .cancel) {
+                                            
+                                        }
+                                    }
+                                
+                                
+                            }
                         }
-                        
-                        Button {
-                            showCreateARoomPopover = true
-                        } label: {
-                            Text("Create a Room")
+                        DisclosureGroup("Create a Room") {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text("Give your new room a name.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                
+                                TextField("Room Name (e.g., Privacy Room)", text: $name)
+                                    .textFieldStyle(.roundedBorder)
+                                
+                                    Button {
+                                        let joinCode = UUID().uuidString.prefix(6)
+                                        let newRoom = Room(
+                                            name: name,
+                                            joinCode: String(joinCode),
+                                            isOccupied: isOccupied,
+                                            ownerID: Auth.auth().currentUser?.uid ?? "No user found",
+                                            members: []
+                                        )
+                                        roomViewModel.createARoom(
+                                            name: newRoom.name ?? "",
+                                            joinCode: newRoom.joinCode ?? "",
+                                            isOccupied: newRoom.isOccupied ?? false,
+                                            ownerID: newRoom.ownerID ?? "",
+                                            members: ["\(newRoom.ownerID ?? "")"]
+                                        )
+                                        
+                                        currentRoom = newRoom
+                                        
+                                    } label: {
+                                        Text("Create Room")
+                                            .frame(maxWidth: .infinity)
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                    .disabled(name.isEmpty)
+                                
+                            }
+                            .padding(.vertical, 8)
                         }
                     }
                     
@@ -76,21 +135,17 @@ struct SettingsView: View {
                     }
                 }
             }
-            .popover(isPresented: $showCreateARoomPopover) {
-                CreateARoomView(roomViewModel: roomViewModel, currentRoom: $currentRoom)
-            }
-            .popover(isPresented: $showJoinARoomPopOver) {
-                JoinARoomView(roomViewModel: roomViewModel)
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
             }
             .navigationTitle("Settings")
-   
+            .onDisappear {
+                roomViewModel.fetchRooms()
+            }
         }
     }
 }
-
-//#Preview {
-//    SettingsView(
-//        currentRoom: .constant(nil),
-//        roomViewModel: RoomViewModel(rooms: [])
-//    )
-//}
