@@ -32,7 +32,7 @@ struct SettingsView: View {
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                 
-                                TextField("Enter 6-digit Code", text: $code)
+                                TextField("Enter Room Code", text: $code)
                                     .textFieldStyle(.roundedBorder)
                                     .textInputAutocapitalization(.characters)
                                     .autocorrectionDisabled()

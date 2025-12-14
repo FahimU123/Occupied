@@ -19,7 +19,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct YourApp: App {
     var authViewModel = AuthViewModel()
-    // register app delegate for Firebase setup
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     var body: some Scene {
@@ -42,8 +41,3 @@ struct YourApp: App {
         
     }
 }
-
-// EDGE CASES:
-// What if someone forgets to check out
-// What do we show if no room joined at all
-// cannot delet ubsless you are owner

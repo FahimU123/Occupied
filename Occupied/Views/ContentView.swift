@@ -13,6 +13,7 @@ struct ContentView: View {
     @State private var currentRoom: Room? = nil
     @State private var showSettingsPopover = false
     @State private var showIsOccupiedConfimation = false
+    @AppStorage("last_active_room_id") private var lastActiveRoomID: String = ""
     
     var body: some View {
         NavigationStack {
@@ -57,15 +58,24 @@ struct ContentView: View {
             
             .onAppear {
                 roomViewModel.fetchRooms()
-                retrieve()
-            }
-            .onDisappear {
-                save()
             }
             .onChange(of: roomViewModel.rooms) { _, newRooms in
                 if let oldRoomID = currentRoom?.id,
                    let updatedRoom = newRooms.first(where: { $0.id == oldRoomID }) {
                     currentRoom = updatedRoom
+                }
+                
+             
+                else if currentRoom == nil, !lastActiveRoomID.isEmpty {
+                    if let restoredRoom = newRooms.first(where: { $0.id == lastActiveRoomID }) {
+                        currentRoom = restoredRoom
+                    }
+                }
+            }
+            
+            .onChange(of: currentRoom) { _, newRoom in
+                if let id = newRoom?.id {
+                    lastActiveRoomID = id
                 }
             }
             .toolbar {
@@ -97,23 +107,6 @@ struct ContentView: View {
                     roomViewModel: roomViewModel
                 )
             }
-        }
-    }
-    
-    // FIXME: work in progress
-    func save() {
-        if let currentRoom = currentRoom {
-            if let encoded = try? JSONEncoder().encode(currentRoom) {
-                UserDefaults.standard.set(encoded, forKey: "current_room")
-            }
-        }
-    }
-    
-    // FIXME: work in progress
-    func retrieve() {
-        if let savedRoom = UserDefaults.standard.data(forKey: "current_room"),
-           let decodedRoom = try? JSONDecoder().decode(Room.self, from: savedRoom) {
-            currentRoom = decodedRoom
         }
     }
 }
