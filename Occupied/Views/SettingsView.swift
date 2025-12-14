@@ -19,6 +19,8 @@ struct SettingsView: View {
     @State private var showWrongCodeAlert = false
     @State private var name: String = ""
     @State private var isOccupied: Bool = false
+    @State private var showShareCodeAlert = false
+    @State private var createdRoomCode: String = ""
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -80,6 +82,8 @@ struct SettingsView: View {
                                         )
                                         
                                         currentRoom = newRoom
+                                        createdRoomCode = String(joinCode)
+                                        showShareCodeAlert = true
                                         
                                     } label: {
                                         Text("Create Room")
@@ -134,6 +138,13 @@ struct SettingsView: View {
                         }
                     }
                 }
+            }
+            .alert("Share this code to invite others!", isPresented: $showShareCodeAlert) {
+                Button("Copy Code") {
+                    UIPasteboard.general.string = createdRoomCode
+                }
+            } message: {
+                Text(createdRoomCode)
             }
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
