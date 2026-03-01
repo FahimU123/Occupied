@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct SolutionView: View {
-    @Bindable var onboarding: OnboardingViewModel
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {

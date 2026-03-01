@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct ScaleView: View {
-    @Bindable var onboarding: OnboardingViewModel
-    @State private var showPaywall = false
+    @AppStorage("has_completed_onboarding") private var hasCompletedOnboarding = false
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -48,7 +47,7 @@ struct ScaleView: View {
             OnboardingProgress(currentStep: 3)
             
             Button {
-                showPaywall = true
+                hasCompletedOnboarding = true
             } label: {
                 Image(systemName: "checkmark")
             }
@@ -57,8 +56,6 @@ struct ScaleView: View {
             .padding()
         }
         .toolbar(.hidden, for: .navigationBar)
-        .sheet(isPresented: $showPaywall) {
-            CustomPaywallView(isPresented: $showPaywall, onboarding: onboarding)
-        }
     }
 }
+

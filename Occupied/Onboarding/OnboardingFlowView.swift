@@ -6,13 +6,12 @@
 //
 
 import SwiftUI
-import RevenueCat
 
 struct OnboardingFlowView: View {
-    @Bindable var onboarding: OnboardingViewModel
+    @State private var path: [OnboardingDestination] = []
     
     var body: some View {
-        NavigationStack(path: $onboarding.navigationPath) {
+        NavigationStack(path: $path) {
             ZStack(alignment: .bottomTrailing) {
                 Color.deeperGray
                     .ignoresSafeArea()
@@ -48,7 +47,9 @@ struct OnboardingFlowView: View {
                 
                 OnboardingProgress(currentStep: 1)
                 
-                NavigationLink(value: OnboardingDestination.solution) {
+                Button {
+                    path.append(.solution)
+                } label: {
                     Image(systemName: "chevron.right")
                 }
                 .buttonStyle(OnboardingFabStyle())
@@ -57,9 +58,9 @@ struct OnboardingFlowView: View {
             .navigationDestination(for: OnboardingDestination.self) { destination in
                 switch destination {
                 case .solution:
-                    SolutionView(onboarding: onboarding)
+                    SolutionView()
                 case .scale:
-                    ScaleView(onboarding: onboarding)
+                    ScaleView()
                 }
             }
         }

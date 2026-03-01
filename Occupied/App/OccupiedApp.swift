@@ -7,7 +7,6 @@
 
 import SwiftUI
 import FirebaseCore
-import RevenueCat
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(
@@ -20,16 +19,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 }
 
 @main
-struct YourApp: App {
+struct OccupiedApp: App {
     @State private var authViewModel = AuthViewModel()
-    @State private var onboardingViewModel = OnboardingViewModel()
     @AppStorage("has_completed_onboarding") private var hasCompletedOnboarding = false
-    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    
-    init() {
-        Purchases.configure(withAPIKey: "test_lXjwATCWjovpBfzqgUqCivXBqBZ")
-    }
     
     var body: some Scene {
         WindowGroup {
@@ -38,10 +31,10 @@ struct YourApp: App {
                     ProgressView()
                 } else if authViewModel.isAuthenticated {
                     if hasCompletedOnboarding {
-                        ContentView(onboardingViewModel: onboardingViewModel)
+                        ContentView()
                             .environment(authViewModel)
                     } else {
-                        OnboardingFlowView(onboarding: onboardingViewModel)
+                        OnboardingFlowView()
                     }
                 } else {
                     ContentUnavailableView(
@@ -53,7 +46,6 @@ struct YourApp: App {
             }
             .task {
                 await authViewModel.checkAuthentication()
-                await onboardingViewModel.checkEntitlement()
             }
         }
     }

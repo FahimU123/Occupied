@@ -1,6 +1,7 @@
 {
   "images" : [
     {
+      "filename" : "320FC64A-593F-4952-B7DC-479F4B371A8C.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -11,6 +12,7 @@
           "value" : "dark"
         }
       ],
+      "filename" : "Door Open.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -26,6 +28,7 @@
           "value" : "dark"
         }
       ],
+      "filename" : "Door Open@2x 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
@@ -41,6 +44,7 @@
           "value" : "dark"
         }
       ],
+      "filename" : "Door Open@3x 1.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

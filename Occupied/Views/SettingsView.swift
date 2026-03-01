@@ -10,13 +10,11 @@ import FirebaseAuth
 
 struct SettingsView: View {
     @Binding var currentRoom: Room?
-    @Bindable var onboardingViewModel: OnboardingViewModel
     var roomViewModel: RoomViewModel
     
     @State private var showDeleteDialog = false
     @State private var showLeaveDialog = false
     @State private var showShareCodeAlert = false
-    @State private var showPaywall = false
     @State private var createdRoomCode: String = ""
     
     @Environment(\.dismiss) private var dismiss
@@ -39,12 +37,10 @@ struct SettingsView: View {
                             }
                         )
                         CreateRoomSectionView(
-                            onboardingViewModel: onboardingViewModel,
                             roomViewModel: roomViewModel,
                             currentRoom: $currentRoom,
                             createdRoomCode: $createdRoomCode,
                             showShareCodeAlert: $showShareCodeAlert,
-                            showPaywall: $showPaywall,
                             onCreated: { dismiss() }
                         )
                     }
@@ -71,9 +67,6 @@ struct SettingsView: View {
                 Text(createdRoomCode)
             }
             .navigationTitle("Settings")
-            .sheet(isPresented: $showPaywall) {
-                CustomPaywallView(isPresented: $showPaywall, onboarding: onboardingViewModel)
-            }
         }
     }
 }
@@ -120,13 +113,11 @@ struct JoinRoomSectionView: View {
 // MARK: - Create Room
 
 struct CreateRoomSectionView: View {
-    @Bindable var onboardingViewModel: OnboardingViewModel
     var roomViewModel: RoomViewModel
     
     @Binding var currentRoom: Room?
     @Binding var createdRoomCode: String
     @Binding var showShareCodeAlert: Bool
-    @Binding var showPaywall: Bool
 
     var onCreated: () -> Void
     
@@ -143,18 +134,10 @@ struct CreateRoomSectionView: View {
                     .textFieldStyle(.roundedBorder)
                 
                 Button {
-                    if onboardingViewModel.isPremium {
-                        createRoomAction()
-                    } else {
-                        showPaywall = true
-                    }
+                    createRoomAction()
                 } label: {
                     HStack {
                         Text("Create Room")
-                        if !onboardingViewModel.isPremium {
-                            Image(systemName: "lock.fill")
-                                .font(.caption)
-                        }
                     }
                     .frame(maxWidth: .infinity)
                 }

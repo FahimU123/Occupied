@@ -14,8 +14,6 @@
 		DD0841152EC779B300482CAA /* FirebaseAnalyticsIdentitySupport in Frameworks */ = {isa = PBXBuildFile; productRef = DD0841142EC779B300482CAA /* FirebaseAnalyticsIdentitySupport */; };
 		DD08411C2EC77D5D00482CAA /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = DD08411B2EC77D5D00482CAA /* FirebaseFirestore */; };
 		DD6074232F002421004D62AE /* ReceiptParser in Frameworks */ = {isa = PBXBuildFile; productRef = DD6074222F002421004D62AE /* ReceiptParser */; };
-		DD6074252F002421004D62AE /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = DD6074242F002421004D62AE /* RevenueCat */; };
-		DD6074272F002421004D62AE /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = DD6074262F002421004D62AE /* RevenueCatUI */; };
 		DD9A38CB2EDE3FD400BF1AE7 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = DD9A38CA2EDE3FD400BF1AE7 /* FirebaseMessaging */; };
 		DDFDB6FA2EC7FF430029CE11 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = DDFDB6F92EC7FF430029CE11 /* FirebaseAuth */; };
 /* End PBXBuildFile section */
@@ -35,26 +33,12 @@
 
 /* Begin PBXFileReference section */
 		DD0840FD2EC771E500482CAA /* Occupied.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Occupied.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		DD5C39D12F5154A50066D2AD /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		DD5C39D32F5154A50066D2AD /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		DD8DF48D2F0DE883006EA2DE /* Exceptions for "Occupied" folder in "Occupied" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = DD0840FC2EC771E500482CAA /* Occupied */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		DD0840FF2EC771E500482CAA /* Occupied */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				DD8DF48D2F0DE883006EA2DE /* Exceptions for "Occupied" folder in "Occupied" target */,
-			);
 			path = Occupied;
 			sourceTree = "<group>";
 		};
@@ -67,8 +51,6 @@
 			files = (
 				DD6074232F002421004D62AE /* ReceiptParser in Frameworks */,
 				DD9A38CB2EDE3FD400BF1AE7 /* FirebaseMessaging in Frameworks */,
-				DD6074252F002421004D62AE /* RevenueCat in Frameworks */,
-				DD6074272F002421004D62AE /* RevenueCatUI in Frameworks */,
 				DD08410F2EC779B300482CAA /* FirebaseAILogic in Frameworks */,
 				DD0841152EC779B300482CAA /* FirebaseAnalyticsIdentitySupport in Frameworks */,
 				DD08410D2EC779B300482CAA /* FirebaseAI in Frameworks */,
@@ -102,7 +84,6 @@
 		DD08411A2EC77D4D00482CAA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				DD5C39D12F5154A50066D2AD /* WidgetKit.framework */,
 				DD5C39D32F5154A50066D2AD /* SwiftUI.framework */,
 			);
 			name = Frameworks;
@@ -138,8 +119,6 @@
 				DDFDB6F92EC7FF430029CE11 /* FirebaseAuth */,
 				DD9A38CA2EDE3FD400BF1AE7 /* FirebaseMessaging */,
 				DD6074222F002421004D62AE /* ReceiptParser */,
-				DD6074242F002421004D62AE /* RevenueCat */,
-				DD6074262F002421004D62AE /* RevenueCatUI */,
 			);
 			productName = Occupied;
 			productReference = DD0840FD2EC771E500482CAA /* Occupied.app */;
@@ -336,7 +315,7 @@
 				DEVELOPMENT_TEAM = SD28Q5JP86;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Occupied/Info.plist;
+				INFOPLIST_FILE = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -370,7 +349,7 @@
 				DEVELOPMENT_TEAM = SD28Q5JP86;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Occupied/Info.plist;
+				INFOPLIST_FILE = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -470,16 +449,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DD6074212F002421004D62AE /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
 			productName = ReceiptParser;
-		};
-		DD6074242F002421004D62AE /* RevenueCat */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DD6074212F002421004D62AE /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
-			productName = RevenueCat;
-		};
-		DD6074262F002421004D62AE /* RevenueCatUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DD6074212F002421004D62AE /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
-			productName = RevenueCatUI;
 		};
 		DD9A38CA2EDE3FD400BF1AE7 /* FirebaseMessaging */ = {
 			isa = XCSwiftPackageProductDependency;

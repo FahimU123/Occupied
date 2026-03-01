@@ -7,8 +7,8 @@
 
 import SwiftUI
 import FirebaseAuth
-import RevenueCat
 
+@MainActor
 struct ContentView: View {
     @State private var roomViewModel = RoomViewModel()
     @State private var currentRoom: Room? = nil
@@ -16,15 +16,13 @@ struct ContentView: View {
     @State private var showIsOccupiedConfirmation = false
     @AppStorage("last_active_room_id") private var lastActiveRoomID: String = ""
     
-    @Bindable var onboardingViewModel: OnboardingViewModel
-    
     var body: some View {
         NavigationStack {
             ZStack {
                 Color.silverMist
                     .ignoresSafeArea()
                 
-                VStack {
+                Group {
                     if let room = currentRoom {
                         ActiveRoomView(
                             room: room,
@@ -61,7 +59,8 @@ struct ContentView: View {
                 if roomViewModel.rooms.count >= 2 {
                     ToolbarItem(placement: .topBarLeading) {
                         Menu {
-                            ForEach(roomViewModel.rooms, id: \.id) { room in
+                            // Modern enumerated ForEach usage
+                            ForEach(roomViewModel.rooms.enumerated(), id: \.element.id) { _, room in
                                 Button(room.name ?? "Unnamed Room") {
                                     currentRoom = room
                                 }
@@ -75,7 +74,6 @@ struct ContentView: View {
             .sheet(isPresented: $showSettingsSheet) {
                 SettingsView(
                     currentRoom: $currentRoom,
-                    onboardingViewModel: onboardingViewModel,
                     roomViewModel: roomViewModel
                 )
                 .presentationDragIndicator(.visible)
@@ -167,8 +165,6 @@ struct SignPostView: View {
     }
 }
 
-// MARK: - Active Room
-
 struct ActiveRoomView: View {
     let room: Room
     @Binding var showConfirmation: Bool
@@ -192,11 +188,12 @@ struct ActiveRoomView: View {
                             .scaledToFit()
                         
                         Text(room.isOccupied ?? false ? "OCCUPIED" : "VACANT")
-                            .font(.system(size: 14, weight: .bold, design: .serif))
+                            .font(.system(size: 14, design: .serif))
+                            .bold()
                             .foregroundStyle(.black)
                             .offset(
-                                x: room.isOccupied ?? false ? 0 : -43
-                            )
+                                x: room.isOccupied ?? false ? 0 : -43,
+                                y: 90)
                     }
                 }
                 .buttonStyle(RawButtonStyle())
