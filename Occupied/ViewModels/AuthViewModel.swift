@@ -5,11 +5,9 @@
 //  Created by Fahim Uddin on 11/14/25.
 //
 
-
 import FirebaseAuth
 import Foundation
 
-@MainActor
 @Observable
 class AuthViewModel {
     var isAuthenticated = false

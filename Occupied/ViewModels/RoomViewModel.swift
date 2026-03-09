@@ -10,9 +10,9 @@ import FirebaseAuth
 import Foundation
 import os
 
-@MainActor
 @Observable
 class RoomViewModel {
+    private var autoVacateTimer: Timer? = nil
     
     var db = Firestore.firestore()
     var rooms: [Room] = []
@@ -20,15 +20,15 @@ class RoomViewModel {
     
     init(rooms: [Room] = []) {
         self.rooms = rooms
+        startAutoVacateMonitor()
     }
     
     func createARoom(name: String, joinCode: String, isOccupied: Bool, ownerID: String, members: [String]) async {
         let newRoom = Room(name: name, joinCode: joinCode, isOccupied: isOccupied, ownerID: ownerID, members: members)
-        
         do {
             _ = try db.collection("Room").addDocument(from: newRoom)
         } catch {
-            print("Error creating a new room \(error.localizedDescription)")
+            AppLogger.logger.error("Error creating room: \(error.localizedDescription)")
         }
     }
     
@@ -38,83 +38,121 @@ class RoomViewModel {
         db.collection("Room")
             .whereField("members", arrayContains: uid)
             .addSnapshotListener { [weak self] (querySnapshot, error) in
+                guard let self else { return }
+                guard let documents = querySnapshot?.documents else { return }
                 
-                guard let self = self else { return }
-                
-                guard let documents = querySnapshot?.documents else {
-                    AppLogger.logger.info("No documents")
-                    return
-                }
-                
-                self.rooms = documents.map { queryDocumentSnapshot -> Room in
-                    let data = queryDocumentSnapshot.data()
-                    let id = queryDocumentSnapshot.documentID
-                    let name = data["name"] as? String ?? "No Room Found"
-                    let joinCode = data["joinCode"] as? String ?? "No Code Found"
-                    let isOccupied = data["isOccupied"] as? Bool ?? false
-                    let ownerID = data["ownerID"] as? String ?? "No owner for room found"
-                    let members = data["members"] as? [String] ?? []
-                    
-                    return Room(id: id, name: name, joinCode: joinCode, isOccupied: isOccupied, ownerID: ownerID, members: members)
+                self.rooms = documents.map { doc -> Room in
+                    let data = doc.data()
+                    return Room(
+                        id: doc.documentID,
+                        name: data["name"] as? String ?? "No Room Found",
+                        joinCode: data["joinCode"] as? String ?? "No Code Found",
+                        isOccupied: data["isOccupied"] as? Bool ?? false,
+                        ownerID: data["ownerID"] as? String ?? "",
+                        members: data["members"] as? [String] ?? [],
+                        releaseAt: (data["releaseAt"] as? Timestamp)?.dateValue(),
+                        occupiedByUID: data["occupiedByUID"] as? String
+                    )
                 }
             }
     }
     
-    func joinARoom(joinCode: String) async -> Bool {
-        guard let userID = Auth.auth().currentUser?.uid else { return false }
+    func joinARoom(joinCode: String) async -> String? {
+        guard let userID = Auth.auth().currentUser?.uid else { return nil }
         
         do {
             let snapshot = try await db.collection("Room")
                 .whereField("joinCode", isEqualTo: joinCode)
                 .getDocuments()
             
-            guard let document = snapshot.documents.first else {
-                showJoinCodeError = true
-                return false
-            }
+            guard let document = snapshot.documents.first else { return nil }
+            let roomID = document.documentID
             
-            try await document.reference.updateData([
+            try await db.collection("Room").document(roomID).updateData([
                 "members": FieldValue.arrayUnion([userID])
             ])
-            return true
+            
+            return roomID
         } catch {
-            print("Error joining room: \(error)")
-            return false
+            AppLogger.logger.error("Error joining room: \(error.localizedDescription)")
+            return nil
         }
     }
     
-    func updateRoomOccupancy(for room: Room?, isOccupied: Bool) async {
+    func updateRoomOccupancy(for room: Room?, isOccupied: Bool, releaseAt: Date? = nil) async {
         guard let roomID = room?.id else { return }
-        let roomRef = db.collection("Room").document(roomID)
+        
+        var data: [String: Any] = ["isOccupied": isOccupied]
+        
+        if isOccupied {
+            data["occupiedByUID"] = Auth.auth().currentUser?.uid ?? ""
+            if let releaseAt {
+                data["releaseAt"] = Timestamp(date: releaseAt)
+            }
+        } else {
+            data["occupiedByUID"] = FieldValue.delete()
+            data["releaseAt"] = FieldValue.delete()
+        }
         
         do {
-            try await roomRef.updateData(["isOccupied": isOccupied])
-            
+            try await db.collection("Room").document(roomID).updateData(data)
         } catch {
-            print("Error updating occupancy: \(error.localizedDescription)")
+            AppLogger.logger.error("Error updating occupancy: \(error.localizedDescription)")
+        }
+    }
+    
+    func extendTime(for room: Room, newReleaseAt: Date) async {
+        guard let roomID = room.id else { return }
+        do {
+            try await db.collection("Room").document(roomID).updateData([
+                "releaseAt": Timestamp(date: newReleaseAt)
+            ])
+        } catch {
+            AppLogger.logger.error("Error extending time: \(error.localizedDescription)")
         }
     }
     
     func leaveRoom(room: Room?) async {
         guard let roomID = room?.id, let userID = Auth.auth().currentUser?.uid else { return }
-        let roomRef = db.collection("Room").document(roomID)
-        
         do {
-            try await roomRef.updateData(["members": FieldValue.arrayRemove([userID])])
+            try await db.collection("Room").document(roomID).updateData([
+                "members": FieldValue.arrayRemove([userID])
+            ])
         } catch {
-            print("Error leaving room: \(error.localizedDescription)")
+            AppLogger.logger.error("Error leaving room: \(error.localizedDescription)")
         }
     }
     
     func deleteARoom(room: Room) async {
-        guard let roomID = room.id, let ownerID = room.ownerID else { return }
-        let currentUserID = Auth.auth().currentUser?.uid
-        
-        if ownerID == currentUserID {
-            do {
-                try await db.collection("Room").document(roomID).delete()
-            } catch {
-                print("Error deleting room \(error.localizedDescription)")
+        guard let roomID = room.id else {
+            AppLogger.logger.error("Delete failed: room has no ID")
+            return
+        }
+        guard room.ownerID == Auth.auth().currentUser?.uid else {
+            AppLogger.logger.error("Delete failed: not the owner")
+            return
+        }
+        do {
+            try await db.collection("Room").document(roomID).delete()
+        } catch {
+            AppLogger.logger.error("Error deleting room: \(error.localizedDescription)")
+        }
+    }
+    
+    deinit {
+        autoVacateTimer?.invalidate()
+    }
+    
+    func startAutoVacateMonitor() {
+        autoVacateTimer?.invalidate()
+        autoVacateTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self else { return }
+            let now = Date()
+            let expiredRooms = self.rooms.filter { ( ($0.isOccupied ?? false) && (($0.releaseAt?.timeIntervalSince(now) ?? 0) <= 0) ) }
+            for room in expiredRooms {
+                Task {
+                    await self.updateRoomOccupancy(for: room, isOccupied: false)
+                }
             }
         }
     }

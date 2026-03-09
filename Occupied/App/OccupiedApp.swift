@@ -7,12 +7,10 @@
 
 import SwiftUI
 import FirebaseCore
+import FirebaseAuth
 
-class AppDelegate: NSObject, UIApplicationDelegate {
-    func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
-    ) -> Bool {
+class AppDelegate: UIResponder, UIApplicationDelegate {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
         return true
     }
@@ -20,9 +18,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 @main
 struct OccupiedApp: App {
-    @State private var authViewModel = AuthViewModel()
-    @AppStorage("has_completed_onboarding") private var hasCompletedOnboarding = false
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @State private var authViewModel = AuthViewModel()
+    
+    var isIPad: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
     
     var body: some Scene {
         WindowGroup {
@@ -30,11 +31,12 @@ struct OccupiedApp: App {
                 if authViewModel.isLoading {
                     ProgressView()
                 } else if authViewModel.isAuthenticated {
-                    if hasCompletedOnboarding {
-                        ContentView()
+                    if isIPad {
+                        IPadRoomEntryView()
                             .environment(authViewModel)
                     } else {
-                        OnboardingFlowView()
+                        ContentView()
+                            .environment(authViewModel)
                     }
                 } else {
                     ContentUnavailableView(
